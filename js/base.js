@@ -1,10 +1,26 @@
+// Base configuration
+var baseConfig = {
+	"unitName": "Microchips",
+	"unitIcon": "<i class='fas fa-microchip'></i>",
+	"buildsToUnlockNext":5,
+	"costIncrement": 1.4
+}
+
+// Save to use when starting new game
+var baseSave = {
+	"totalClicks": 0,
+	"units": 0,
+	"unitsPerClick": 1,
+	"unitsPerSecond": 0,
+	"saveBuilds":[0]
+}
+
+// Save loaded. If no save -> save = baseSave
 var save = {
 	"totalClicks": 0,
 	"units": 400000000,
 	"unitsPerClick": 1,
 	"unitsPerSecond": 0,
-	"costIncrement": 1.4,
-	"buildsToUnlockNext":5,
 	"saveBuilds":[10, 8, 6]
 }
 var builds = [
@@ -41,7 +57,7 @@ setInterval(function(){
 	console.log("------UNITS PER CLICK: " + save.unitsPerClick);
 	save.units = Math.round((save.units + save.unitsPerSecond)*100)/100;
 	updateBuy();
-	updateDisplay();
+	updateInfo();
 
 }, 1000)
 
@@ -55,17 +71,17 @@ function buildClick() {
 		}
 		
 		$(this).data("qtty", $(this).data("qtty") + 1);
-		$(this).data("priceNow", Math.round($(this).data("priceNow") * save.costIncrement));
+		$(this).data("priceNow", Math.round($(this).data("priceNow") * baseConfig.costIncrement));
 		$(this).children("span.qtty").html($(this).data("qtty"));
 		$(this).children("span.qtty").removeClass("badge-danger").addClass("badge-success");
 
 
-		if($(this).data("qtty") == save.buildsToUnlockNext && $(this).data("id") < builds.length - 1) {
+		if($(this).data("qtty") == baseConfig.buildsToUnlockNext && $(this).data("id") < builds.length - 1) {
 			console.log(builds[$(this).data("id") + 1]);
 			var buildElement = $("<button class='btn list-group-item'> " + builds[$(this).data("id") + 1].name + " </button>");
 			var priceNow = builds[$(this).data("id") + 1].baseCost;
 			buildElement.prepend("<span class='badge badge-danger float-left qtty'>0</span>");
-			buildElement.append("<span class='badge badge-info float-right'>" + priceNow + "u.</span>");
+			buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 			buildElement.data({
 				"id": $(this).data("id") + 1,
 				"qtty": 0,
@@ -77,7 +93,7 @@ function buildClick() {
 			$("#buy ul").append(buildElement);
 		}
 		updateBuy();
-		updateDisplay();
+		updateInfo();
 };
 
 function updateBuy() {
@@ -92,13 +108,16 @@ function updateBuy() {
 			$(this).removeClass("list-group-item-success");
 			$(this).addClass("disabled");
 		}
-		$(this).children("span.badge-info").html($(this).data("priceNow") + "u.");
+		$(this).children("span.badge-warning").html($(this).data("priceNow") + " " + baseConfig.unitIcon);
 	});
 }
 
 // Updates header to show changes
-function updateDisplay() {
-	$("#header").html("<p>" + save.units + " units</p><p>" + save.totalClicks + " total clicks</p>");
+function updateInfo() {
+	//$("#header").html("<p>" + save.units + " units</p><p>" + save.totalClicks + " total clicks</p>");
+	$("#unitsName").html("<span class='badge badge-warning'>" + baseConfig.unitName + " " + baseConfig.unitIcon + "</span>");
+	$("#unitsAmount").html("<span class='badge badge-light'>" + save.units + "</span>");
+	$("#clicksAmount").html("<span class='badge badge-light'>" + save.totalClicks + "</span>");
 }
 
 /*
@@ -115,7 +134,7 @@ function loadBuy() {
 	// Add first element no matter what
 	buildElement = $("<button class='btn list-group-item'> " + builds[0].name + " </button>");
 	if(save.saveBuilds[0] > 0) {
-		priceNow = builds[0].baseCost * save.saveBuilds[0] * save.costIncrement;
+		priceNow = builds[0].baseCost * save.saveBuilds[0] * baseConfig.costIncrement;
 		buildElement.prepend("<span class='badge badge-success float-left qtty'>" + save.saveBuilds[0] + "</span>");
 	} else {
 		priceNow = builds[0].baseCost;
@@ -128,7 +147,7 @@ function loadBuy() {
 	} else {
 		buildElement.addClass("disabled");
 	}
-	buildElement.append("<span class='badge badge-info float-right'>" + priceNow + "u.</span>");
+	buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 	buildElement.data({
 		"id": 0,
 		"qtty": save.saveBuilds[0],
@@ -146,13 +165,13 @@ function loadBuy() {
 		buildElement = $("<button class='btn list-group-item'> " + builds[i].name + " </button>");
 		if(qtty > 0) {
 			buildElement.prepend("<span class='badge badge-success float-left qtty'>" + qtty + "</span>");
-			priceNow = Math.round(qtty * builds[i].baseCost * save.costIncrement);
+			priceNow = Math.round(qtty * builds[i].baseCost * baseConfig.costIncrement);
 		} else {
 			buildElement.prepend("<span class='badge badge-danger float-left qtty'>" + qtty + "</span>");
 			priceNow = builds[i].baseCost;
 		}		
 
-		buildElement.append("<span class='badge badge-info float-right'>" + priceNow + "u.</span>");
+		buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 
 		buildElement.data({
 			"id": i,
@@ -172,7 +191,7 @@ function loadBuy() {
 		}
 		
 		buyList.append(buildElement);
-		if(qtty >= save.buildsToUnlockNext && builds[i] != undefined) {
+		if(qtty >= baseConfig.buildsToUnlockNext && builds[i] != undefined) {
 			addNext = true;
 		}
 
@@ -188,7 +207,7 @@ function loadBuy() {
 		
 		priceNow = builds[save.saveBuilds.length].baseCost;
 		buildElement.prepend("<span class='badge badge-danger float-left qtty'>0</span>");
-		buildElement.append("<span class='badge badge-info float-right'>" + priceNow + "u.</span>");
+		buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 		buildElement.data({
 			"id": save.saveBuilds.length,
 			"qtty": 0,
@@ -215,10 +234,10 @@ $("#clickArea").on("click", function(e){
 	$("#clickArea").append(badge);
 	badge.fadeIn(1000).fadeOut(500, function() { $(this).remove(); });
 	updateBuy();
-	updateDisplay();
+	updateInfo();
 });
 
 
 
-updateDisplay();
+updateInfo();
 loadBuy();
