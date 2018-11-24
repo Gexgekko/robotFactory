@@ -1,0 +1,7 @@
+#content {
+	display: flex;
+}
+
+#clickArea, #controlArea {
+	width: 50%;
+}
