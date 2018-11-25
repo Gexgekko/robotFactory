@@ -112,10 +112,12 @@ function updateBuy() {
 	});
 }
 
+function loadInfo() {
+	$("#unitsName").html("<span class='badge badge-warning'>" + baseConfig.unitName + " " + baseConfig.unitIcon + "</span>");
+}
+
 // Updates header to show changes
 function updateInfo() {
-	//$("#header").html("<p>" + save.units + " units</p><p>" + save.totalClicks + " total clicks</p>");
-	$("#unitsName").html("<span class='badge badge-warning'>" + baseConfig.unitName + " " + baseConfig.unitIcon + "</span>");
 	$("#unitsAmount").html("<span class='badge badge-light'>" + save.units + "</span>");
 	$("#clicksAmount").html("<span class='badge badge-light'>" + save.totalClicks + "</span>");
 }
@@ -229,7 +231,7 @@ $("#clickArea").on("click", function(e){
 	save.totalClicks++;
 	save.units += save.unitsPerClick;
 
-	var badge = $("<span class='badge badge-success'>+" + save.unitsPerClick + "</span>");
+	var badge = $("<span class='badge badge-warning'>+" + save.unitsPerClick + " " + baseConfig.unitIcon + "</span>");
 	badge.css({'top':e.pageY-100,'left':e.pageX, 'position':'absolute'});
 	$("#clickArea").append(badge);
 	badge.fadeIn(1000).fadeOut(500, function() { $(this).remove(); });
@@ -239,5 +241,5 @@ $("#clickArea").on("click", function(e){
 
 
 
-updateInfo();
+loadInfo();
 loadBuy();
