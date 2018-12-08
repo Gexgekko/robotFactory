@@ -13,18 +13,22 @@ var baseSave = {
 	"unitsPerClick": 1,
 	"unitsPerSecond": 0,
 	"unitsPerBuild": [0],
-	"saveBuilds":[0]
+	"saveBuilds":[0],
+	"savedTheme": 0
 }
 
 // Save loaded. If no save -> save = baseSave
 var save = {
 	"totalClicks": 0,
-	"units": 400000000,
+	"units": 10,
 	"unitsPerClick": 1,
 	"unitsPerSecond": 6.40,
 	"unitsPerBuild": [1, 2.40, 3],
-	"saveBuilds":[10, 8, 6]
+	"saveBuilds":[10, 8, 6],
+	"savedTheme": 1
 }
+
+
 var builds = [
 	{
 		"name": "Pieza",
@@ -53,6 +57,34 @@ var builds = [
 	}
 ];
 
+var themes = [
+	{
+		"themeName": "Light Theme",
+		"backgroundColor": "bg-light",
+		"clickColor": "warning",
+		"buildAffordable": "success",
+		"hasNoBuild": "danger",
+		"hasBuild": "success",
+		"buildPrice": "warning",
+		"unitsColor": "warning",
+		"amountDisplay": "light"
+	},{
+		"themeName": "Dark Theme",
+		"backgroundColor": "bg-dark",
+		"clickColor": "warning",
+		"buildAffordable": "success",
+		"hasNoBuild": "danger",
+		"hasBuild": "success",
+		"buildPrice": "warning",
+		"unitsColor": "warning",
+		"amountDisplay": "light"
+	}
+]
+
+
+
+var theme = themes[save.savedTheme];
+console.log(theme);
 setInterval(function(){
 
 	//console.log("------UNITS PER SECOND: " + save.unitsPerSecond);
@@ -80,15 +112,14 @@ function buildClick() {
 		$(this).data("qtty", $(this).data("qtty") + 1);
 		$(this).data("priceNow", Math.round($(this).data("priceNow") * baseConfig.costIncrement));
 		$(this).children("span.qtty").html($(this).data("qtty"));
-		$(this).children("span.qtty").removeClass("badge-danger").addClass("badge-success");
+		$(this).children("span.qtty").removeClass("badge-" + theme.hasNoBuild).addClass("badge-" + theme.hasBuild);
 
 
 		if($(this).data("qtty") == baseConfig.buildsToUnlockNext && $(this).data("id") < builds.length - 1) {
-			console.log(builds[$(this).data("id") + 1]);
 			var buildElement = $("<button class='btn list-group-item'> " + builds[$(this).data("id") + 1].name + " </button>");
 			var priceNow = builds[$(this).data("id") + 1].baseCost;
-			buildElement.append("<span class='badge badge-danger float-right qtty'>0</span>");
-			buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+			buildElement.append("<span class='badge badge-" + theme.hasNoBuild + " float-right qtty'>0</span>");
+			buildElement.prepend("<span class='badge badge-" + theme.buildPrice + " float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 			buildElement.data({
 				"id": $(this).data("id") + 1,
 				"qtty": 0,
@@ -107,26 +138,26 @@ function updateBuy() {
 	$("#buy ul button").each(function() {
 		if(($(this).data("qtty") > 0 && $(this).data("priceNow") <= save.units) || ($(this).data("qtty") == 0 && builds[$(this).data("id")].baseCost <= save.units)) {
 			$(this).removeClass("disabled");
-			$(this).addClass("list-group-item-success");
+			$(this).addClass("list-group-item-" + theme.buildAffordable);
 			$(this).off("click");
 			$(this).on("click", buildClick);
 		} else {
 			$(this).off("click");
-			$(this).removeClass("list-group-item-success");
+			$(this).removeClass("list-group-item-" + theme.buildAffordable);
 			$(this).addClass("disabled");
 		}
-		$(this).children("span.badge-warning").html($(this).data("priceNow") + " " + baseConfig.unitIcon);
+		$(this).children("span.badge-" + theme.buildPrice).html($(this).data("priceNow") + " " + baseConfig.unitIcon);
 	});
 }
 
 function loadInfo() {
-	$("#unitsName").html("<span class='badge badge-warning'>" + baseConfig.unitName + " " + baseConfig.unitIcon + "</span>");
+	$("#unitsName").html("<span class='badge badge-" + theme.unitsColor + "'>" + baseConfig.unitName + " " + baseConfig.unitIcon + "</span>");
 }
 
 // Updates header to show changes
 function updateInfo() {
-	$("#unitsAmount").html("<span class='badge badge-light'>" + save.units + "</span>");
-	$("#clicksAmount").html("<span class='badge badge-light'>" + save.totalClicks + "</span>");
+	$("#unitsAmount").html("<span class='badge badge-" + theme.amountDisplay + "'>" + save.units + "</span>");
+	$("#clicksAmount").html("<span class='badge badge-" + theme.amountDisplay + "'>" + save.totalClicks + "</span>");
 }
 
 /*
@@ -144,19 +175,19 @@ function loadBuy() {
 	buildElement = $("<button class='btn list-group-item'> " + builds[0].name + " </button>");
 	if(save.saveBuilds[0] > 0) {
 		priceNow = builds[0].baseCost * save.saveBuilds[0] * baseConfig.costIncrement;
-		buildElement.append("<span class='badge badge-success float-right qtty'>" + save.saveBuilds[0] + "</span>");
+		buildElement.append("<span class='badge badge-" + theme.hasBuild + " float-right qtty'>" + save.saveBuilds[0] + "</span>");
 	} else {
 		priceNow = builds[0].baseCost;
 		save.saveBuilds[0] = 0;
-		buildElement.append("<span class='badge badge-danger float-right qtty'>" + save.saveBuilds[0] + "</span>");
+		buildElement.append("<span class='badge badge-" + theme.hasNoBuild + " float-right qtty'>" + save.saveBuilds[0] + "</span>");
 		
 	}
 	if(priceNow <= save.units) {
-		buildElement.addClass("list-group-item-success");
+		buildElement.addClass("list-group-item-" + theme.buildAffordable);
 	} else {
 		buildElement.addClass("disabled");
 	}
-	buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+	buildElement.prepend("<span class='badge badge-" + theme.buildPrice + " float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 	buildElement.data({
 		"id": 0,
 		"qtty": save.saveBuilds[0],
@@ -173,14 +204,14 @@ function loadBuy() {
 		qtty = save.saveBuilds[i];
 		buildElement = $("<button class='btn list-group-item'> " + builds[i].name + " </button>");
 		if(qtty > 0) {
-			buildElement.append("<span class='badge badge-success float-right qtty'>" + qtty + "</span>");
+			buildElement.append("<span class='badge badge-" + theme.hasBuild + " float-right qtty'>" + qtty + "</span>");
 			priceNow = Math.round(qtty * builds[i].baseCost * baseConfig.costIncrement);
 		} else {
-			buildElement.append("<span class='badge badge-danger float-right qtty'>" + qtty + "</span>");
+			buildElement.append("<span class='badge badge-" + theme.hasNoBuild + " float-right qtty'>" + qtty + "</span>");
 			priceNow = builds[i].baseCost;
 		}		
 
-		buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+		buildElement.prepend("<span class='badge badge-" + theme.buildPrice + " float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 
 		buildElement.data({
 			"id": i,
@@ -193,7 +224,7 @@ function loadBuy() {
 
 		if((qtty > 0 && priceNow <= save.units) || (qtty == 0 && builds[i].baseCost <= save.units)) {
 			buildElement.removeClass("disabled");
-			buildElement.addClass("list-group-item-success");
+			buildElement.addClass("list-group-item-" + theme.buildAffordable);
 			buildElement.on("click", buildClick);
 		} else {
 			buildElement.addClass("disabled");
@@ -209,14 +240,14 @@ function loadBuy() {
 	// Add next in list if its unlocked by buildsToUnlockNext
 	if(addNext) {
 		if(builds[save.saveBuilds.length].baseCost <= save.units) {
-			buildElement = $("<button class='btn list-group-item list-group-item-success'> " + builds[save.saveBuilds.length].name + " </button>");
+			buildElement = $("<button class='btn list-group-item list-group-item-" + theme.buildAffordable + "'> " + builds[save.saveBuilds.length].name + " </button>");
 		} else {
 			buildElement = $("<button class='btn list-group-item disabled'> " + builds[save.saveBuilds.length].name + " </button>");
 		}
 		
 		priceNow = builds[save.saveBuilds.length].baseCost;
-		buildElement.append("<span class='badge badge-danger float-right qtty'>0</span>");
-		buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+		buildElement.append("<span class='badge badge-" + theme.hasNoBuild + " float-right qtty'>0</span>");
+		buildElement.prepend("<span class='badge badge-" + theme.buildPrice + " float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 		buildElement.data({
 			"id": save.saveBuilds.length,
 			"qtty": 0,
@@ -229,7 +260,7 @@ function loadBuy() {
 		buyList.append(buildElement);
 	}
 
-
+	$("#buy").html("");
 	$("#buy").append(buyList);
 }
 
@@ -238,7 +269,7 @@ $("#clickArea").on("click", function(e){
 	save.totalClicks++;
 	save.units += save.unitsPerClick;
 
-	var badge = $("<span class='badge badge-warning'>+" + save.unitsPerClick + " " + baseConfig.unitIcon + "</span>");
+	var badge = $("<span class='badge badge-" + theme.clickColor + "'>+" + save.unitsPerClick + " " + baseConfig.unitIcon + "</span>");
 	badge.css({'top':e.pageY-100,'left':e.pageX, 'position':'absolute'});
 	$("#clickArea").append(badge);
 	badge.fadeIn(1000).fadeOut(500, function() { $(this).remove(); });
@@ -246,7 +277,40 @@ $("#clickArea").on("click", function(e){
 	updateInfo();
 });
 
+$("body").addClass(theme.backgroundColor);
+
+function updateAll() {
+	$("body").addClass(theme.backgroundColor);
+	loadInfo();
+	loadBuy();
+	loadInfo();
+}
+
+function themeSelect(event){
+	console.log(event.data.id);
+	if(event.data.id != save.savedTheme) {
+		$("body").removeClass(theme.backgroundColor);
+		theme = themes[event.data.id];
+		save.savedTheme = event.data.id;
+		updateAll();
+	}
+	$("#themeSelector").children().removeClass("active");
+	$(this).addClass("active");
+}
+
+function loadConfig() {
+	for(var i = 0; i < themes.length; i++){
+		if(i == save.savedTheme) {
+			$("#themeSelector").append("<a class='dropdown-item active'>" + themes[i].themeName + "</a>");
+		} else {
+			$("#themeSelector").append("<a class='dropdown-item'>" + themes[i].themeName + "</a>");
+		}
+		$("#themeSelector :last-child").on("click", {"id": i }, themeSelect);
+	}
+}
+
 
 
 loadInfo();
 loadBuy();
+loadConfig();
