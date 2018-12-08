@@ -80,8 +80,8 @@ function buildClick() {
 			console.log(builds[$(this).data("id") + 1]);
 			var buildElement = $("<button class='btn list-group-item'> " + builds[$(this).data("id") + 1].name + " </button>");
 			var priceNow = builds[$(this).data("id") + 1].baseCost;
-			buildElement.prepend("<span class='badge badge-danger float-left qtty'>0</span>");
-			buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+			buildElement.append("<span class='badge badge-danger float-right qtty'>0</span>");
+			buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 			buildElement.data({
 				"id": $(this).data("id") + 1,
 				"qtty": 0,
@@ -137,11 +137,11 @@ function loadBuy() {
 	buildElement = $("<button class='btn list-group-item'> " + builds[0].name + " </button>");
 	if(save.saveBuilds[0] > 0) {
 		priceNow = builds[0].baseCost * save.saveBuilds[0] * baseConfig.costIncrement;
-		buildElement.prepend("<span class='badge badge-success float-left qtty'>" + save.saveBuilds[0] + "</span>");
+		buildElement.append("<span class='badge badge-success float-right qtty'>" + save.saveBuilds[0] + "</span>");
 	} else {
 		priceNow = builds[0].baseCost;
 		save.saveBuilds[0] = 0;
-		buildElement.prepend("<span class='badge badge-danger float-left qtty'>" + save.saveBuilds[0] + "</span>");
+		buildElement.append("<span class='badge badge-danger float-right qtty'>" + save.saveBuilds[0] + "</span>");
 		
 	}
 	if(priceNow <= save.units) {
@@ -149,7 +149,7 @@ function loadBuy() {
 	} else {
 		buildElement.addClass("disabled");
 	}
-	buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+	buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 	buildElement.data({
 		"id": 0,
 		"qtty": save.saveBuilds[0],
@@ -166,14 +166,14 @@ function loadBuy() {
 		qtty = save.saveBuilds[i];
 		buildElement = $("<button class='btn list-group-item'> " + builds[i].name + " </button>");
 		if(qtty > 0) {
-			buildElement.prepend("<span class='badge badge-success float-left qtty'>" + qtty + "</span>");
+			buildElement.append("<span class='badge badge-success float-right qtty'>" + qtty + "</span>");
 			priceNow = Math.round(qtty * builds[i].baseCost * baseConfig.costIncrement);
 		} else {
-			buildElement.prepend("<span class='badge badge-danger float-left qtty'>" + qtty + "</span>");
+			buildElement.append("<span class='badge badge-danger float-right qtty'>" + qtty + "</span>");
 			priceNow = builds[i].baseCost;
 		}		
 
-		buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+		buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 
 		buildElement.data({
 			"id": i,
@@ -208,8 +208,8 @@ function loadBuy() {
 		}
 		
 		priceNow = builds[save.saveBuilds.length].baseCost;
-		buildElement.prepend("<span class='badge badge-danger float-left qtty'>0</span>");
-		buildElement.append("<span class='badge badge-warning float-right'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
+		buildElement.append("<span class='badge badge-danger float-right qtty'>0</span>");
+		buildElement.prepend("<span class='badge badge-warning float-left'>" + priceNow + " " + baseConfig.unitIcon + "</span>");
 		buildElement.data({
 			"id": save.saveBuilds.length,
 			"qtty": 0,
