@@ -3,7 +3,7 @@ var baseConfig = {
 	"unitName": "Microchips",
 	"unitIcon": "<i class='fas fa-microchip'></i>",
 	"buildsToUnlockNext":5,
-	"costIncrement": 1.4
+	"costIncrement": 1.40
 }
 
 // Save to use when starting new game
@@ -12,6 +12,7 @@ var baseSave = {
 	"units": 0,
 	"unitsPerClick": 1,
 	"unitsPerSecond": 0,
+	"unitsPerBuild": [0],
 	"saveBuilds":[0]
 }
 
@@ -20,26 +21,27 @@ var save = {
 	"totalClicks": 0,
 	"units": 400000000,
 	"unitsPerClick": 1,
-	"unitsPerSecond": 0,
+	"unitsPerSecond": 6.40,
+	"unitsPerBuild": [1, 2.40, 3],
 	"saveBuilds":[10, 8, 6]
 }
 var builds = [
 	{
 		"name": "Pieza",
 		"baseCost": 10,
-		"unitsPerSecond": 0.1
+		"unitsPerSecond": 0.10
 	},{
 		"name": "Pieza2",
 		"baseCost": 15,
-		"unitsPerSecond": 0.3
+		"unitsPerSecond": 0.30
 	},{
 		"name": "Pieza3",
 		"baseCost": 16,
-		"unitsPerSecond": 0.5
+		"unitsPerSecond": 0.50
 	},{
 		"name": "Pieza4",
 		"baseCost": 19,
-		"unitsPerSecond": 0.75
+		"unitsPerSecond": 0.750
 	},{
 		"name": "Pieza5",
 		"baseCost": 20,
@@ -53,8 +55,8 @@ var builds = [
 
 setInterval(function(){
 
-	console.log("------UNITS PER SECOND: " + save.unitsPerSecond);
-	console.log("------UNITS PER CLICK: " + save.unitsPerClick);
+	//console.log("------UNITS PER SECOND: " + save.unitsPerSecond);
+	//console.log("------UNITS PER CLICK: " + save.unitsPerClick);
 	save.units = Math.round((save.units + save.unitsPerSecond)*100)/100;
 	updateBuy();
 	updateInfo();
@@ -67,7 +69,12 @@ function buildClick() {
 		if($(this).data("unitsPerClick") != undefined) {
 			save.unitsPerClick += $(this).data("unitsPerClick");
 		} else {
-			save.unitsPerSecond += $(this).data("unitsPerSecond");
+			save.unitsPerSecond = Math.round((save.unitsPerSecond + $(this).data("unitsPerSecond"))*100)/100;
+			Math.round((save.units + save.unitsPerSecond)*100)/100
+			save.unitsPerBuild[$(this).data("id")] = Math.round((save.unitsPerBuild[$(this).data("id")] + $(this).data("unitsPerSecond"))*100)/100;
+			//console.error("Units per build --------");
+			//console.log(save.unitsPerBuild);
+			//console.error("------------")
 		}
 		
 		$(this).data("qtty", $(this).data("qtty") + 1);
